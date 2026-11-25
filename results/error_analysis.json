@@ -1,0 +1,14 @@
+{
+ "n": 852,
+ "top1": 0.24061032863849766,
+ "top3": 0.4166666666666667,
+ "top25": 0.7816901408450704,
+ "top3_seen": 0.4487534626038781,
+ "top3_unseen": 0.39307535641547864,
+ "n_seen": 361,
+ "n_unseen": 491,
+ "rank2or3": 0.176056338028169,
+ "rank4to25": 0.36502347417840375,
+ "not_in_top25": 0.21830985915492956,
+ "in_sample_note": "fusion weight 0.5 fixed in advance from out-of-fold choice; this table is descriptive, not a new tuned score"
+}

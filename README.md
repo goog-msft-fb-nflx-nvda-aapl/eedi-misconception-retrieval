@@ -17,6 +17,7 @@ the winning teams used 14b-72b qwen rankers and synthetic data; see SURVEY.md.
 - `09_rl_selector.py`: reinforce top-3 selector vs a supervised listwise policy on the same features
 - `05_make_tables.py`: builds `results/ablation.md` from the saved histories
 - `results/`: per-epoch histories (json), baseline csvs, label stats
+- `presentation/PRESENTATION.md`: slide-by-slide brief and verbatim speaker script for the video
 - `WORKLOG.md`: every number, the setup behind it and what was not done
 - `SURVEY.md`: what the top eedi teams did (competitor writeups, not peer reviewed)
 
