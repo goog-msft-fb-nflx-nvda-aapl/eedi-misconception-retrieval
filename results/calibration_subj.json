@@ -1,0 +1,53 @@
+{
+ "reranker only": {
+  "MAP@3_oof": 0.26369327073552423,
+  "unseen_in_top1": 0.4061032863849765,
+  "chosen_(w,b)": [
+   [
+    0,
+    0
+   ],
+   [
+    0,
+    0
+   ]
+  ]
+ },
+ "+ retriever fusion": {
+  "MAP@3_oof": 0.2832550860719875,
+  "unseen_in_top1": 0.4495305164319249,
+  "chosen_(w,b)": [
+   [
+    1.0,
+    0
+   ],
+   [
+    0.5,
+    0
+   ]
+  ]
+ },
+ "+ fusion + unseen bonus": {
+  "MAP@3_oof": 0.2836463223787168,
+  "unseen_in_top1": 0.5352112676056338,
+  "chosen_(w,b)": [
+   [
+    1.0,
+    0.25
+   ],
+   [
+    0.5,
+    0.5
+   ]
+  ]
+ },
+ "in_sample_best_reference_only": {
+  "(w,b)": [
+   0.5,
+   1.0
+  ],
+  "MAP@3": 0.2912754303599374
+ },
+ "val_rows_label_unseen_share": 0.5762910798122066,
+ "val_rows_label_in_top25": 0.710093896713615
+}

@@ -31,6 +31,8 @@ def parse_args():
     p.add_argument("--val_size", type=float, default=0.15)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--topk", type=int, default=25)
+    p.add_argument("--expand", action="store_true"); p.add_argument("--qreason", action="store_true")
+    p.add_argument("--retr_len", type=int, default=192)
     return p.parse_args()
 
 
@@ -67,12 +69,24 @@ def main():
     device = "cuda"
     train_df, mis, _ = load_data()
     train_df["query"] = train_df.apply(build_query, axis=1)
+    if a.qreason:
+        import pandas as pd
+        from utils.helpers import DATA_DIR
+        qr = pd.read_csv(DATA_DIR / "query_reasoning.csv")
+        train_df = train_df.merge(qr, on=["QuestionId", "WrongAnswer"], how="left")
+        assert train_df["Reasoning"].notna().all()
+        train_df["query"] = train_df["query"] + " | Reasoning: " + train_df["Reasoning"]
     tr, va = split_by_question(train_df, a.val_size, a.seed)
     corpus = mis["MisconceptionName"].tolist(); misc_ids = mis["MisconceptionId"].tolist()
+    if a.expand:
+        import pandas as pd
+        from utils.helpers import DATA_DIR
+        ex = pd.read_csv(DATA_DIR / "misconception_expanded.csv").set_index("MisconceptionId")["Expansion"]
+        corpus = [f"{n}. {ex[i]}" for n, i in zip(corpus, misc_ids)]
     id2idx = {m: i for i, m in enumerate(misc_ids)}
 
     retr = SentenceTransformer(str(MODELS_DIR / f"retriever_{a.retriever_tag}"), device=device)
-    retr.max_seq_length = 192
+    retr.max_seq_length = a.retr_len
     tr_cand, tr_sim = retrieve(retr, tr["query"].tolist(), corpus, a.topk)
     va_cand, va_sim = retrieve(retr, va["query"].tolist(), corpus, a.topk)
     ref = {"MAP@3": map_at_k([[misc_ids[j] for j in r] for r in va_cand], va["MisconceptionId"].tolist(), 3),

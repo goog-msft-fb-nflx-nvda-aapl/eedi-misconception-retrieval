@@ -1,0 +1,17 @@
+{
+ "reranker_only": {
+  "MAP@3_oof_mean": 0.26388888911042413,
+  "std_over_seeds": 0.0,
+  "use_unseen": 1
+ },
+ "supervised_listwise": {
+  "MAP@3_oof_mean": 0.2821987558838347,
+  "std_over_seeds": 0.0037128282380641804,
+  "use_unseen": 1
+ },
+ "reinforce": {
+  "MAP@3_oof_mean": 0.2771518017624466,
+  "std_over_seeds": 0.0089210528449436,
+  "use_unseen": 1
+ }
+}

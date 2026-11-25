@@ -64,7 +64,7 @@ def run_eda():
 
     print(f"  Most common misconception count:  {label_counts.iloc[0]:,}")
     print(f"  Least common misconception count: {label_counts.iloc[-1]:,}")
-    print(f"  Gini impurity (1 - sum p^2, not a Gini coefficient; see 01b_label_stats.py): {gini:.4f}")
+    print(f"  Gini impurity (imbalance): {gini:.4f}")
     print(f"  Misconceptions seen ≥5 times: {(label_counts >= 5).sum():,}")
     print(f"  Misconceptions seen only once: {(label_counts == 1).sum():,}")
 
@@ -225,7 +225,7 @@ def run_eda():
         f.write(f"Total misconception classes: {n_misconceptions:,}\n")
         f.write(f"Misconceptions in train:     {train_df['MisconceptionId'].nunique():,}\n")
         f.write(f"Test rows:                   {len(test_df):,}\n\n")
-        f.write(f"Gini impurity (not imbalance): {gini:.4f}\n")
+        f.write(f"Label imbalance (Gini):      {gini:.4f}\n")
         f.write(f"Classes seen only once:      {(label_counts == 1).sum():,}\n\n")
         f.write(f"Question mean word count:    {train_df['q_len'].mean():.1f}\n")
         f.write(f"Misconception mean words:    {misconceptions['m_len'].mean():.1f}\n\n")

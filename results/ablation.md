@@ -10,8 +10,16 @@
 | e5l fine-tuned                           | QuestionId |  0.3099 |   0.3636 |                   0.8092 |
 | e5l_subj zero-shot (epoch 0)             | SubjectId  |  0.1164 |   0.1481 |                   0.4237 |
 | e5l_subj fine-tuned                      | SubjectId  |  0.232  |   0.2816 |                   0.7136 |
+| e5l_subj_L320 zero-shot (epoch 0)        | SubjectId  |  0.118  |   0.1492 |                   0.4214 |
+| e5l_subj_L320 fine-tuned                 | SubjectId  |  0.2171 |   0.2665 |                   0.7101 |
 | e5l_subj_exp zero-shot (epoch 0)         | SubjectId  |  0.1371 |   0.1813 |                   0.5763 |
 | e5l_subj_exp fine-tuned                  | SubjectId  |  0.2248 |   0.2807 |                   0.7312 |
+| e5l_subj_exp_L320 zero-shot (epoch 0)    | SubjectId  |  0.1371 |   0.1813 |                   0.5763 |
+| e5l_subj_exp_L320 fine-tuned             | SubjectId  |  0.2285 |   0.2834 |                   0.7394 |
+| e5l_subj_expqr_L320 zero-shot (epoch 0)  | SubjectId  |  0.141  |   0.1877 |                   0.5739 |
+| e5l_subj_expqr_L320 fine-tuned           | SubjectId  |  0.2553 |   0.3115 |                   0.7817 |
+| e5l_subj_qr_L320 zero-shot (epoch 0)     | SubjectId  |  0.1227 |   0.1535 |                   0.4261 |
+| e5l_subj_qr_L320 fine-tuned              | SubjectId  |  0.2218 |   0.2772 |                   0.7547 |
 | e5s zero-shot (epoch 0)                  | QuestionId |  0.0606 |   0.0864 |                   0.3038 |
 | e5s fine-tuned                           | QuestionId |  0.2695 |   0.325  |                   0.7634 |
 | e5l_bge reranker over its retriever      | QuestionId |  0.3394 |   0.3925 |                   0.8076 |

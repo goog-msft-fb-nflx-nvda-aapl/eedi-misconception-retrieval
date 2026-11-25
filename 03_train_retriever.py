@@ -34,6 +34,7 @@ def parse_args():
     p.add_argument("--val_size", type=float, default=0.15)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--expand", action="store_true", help="doc text = name + LLM expansion (06_expand_misconceptions.py)")
+    p.add_argument("--qreason", action="store_true", help="append LLM reasoning to the query (07_query_reasoning.py)")
     p.add_argument("--q_prefix", default="query: ")
     p.add_argument("--d_prefix", default="passage: ")
     return p.parse_args()
@@ -82,6 +83,13 @@ def main():
 
     train_df, mis, _ = load_data()
     train_df["query"] = train_df.apply(build_query, axis=1)
+    if a.qreason:
+        import pandas as pd
+        from utils.helpers import DATA_DIR
+        qr = pd.read_csv(DATA_DIR / "query_reasoning.csv")
+        train_df = train_df.merge(qr, on=["QuestionId", "WrongAnswer"], how="left")
+        assert train_df["Reasoning"].notna().all()
+        train_df["query"] = train_df["query"] + " | Reasoning: " + train_df["Reasoning"]
     tr, va = split_by_question(train_df, a.val_size, a.seed)
     misc_ids = mis["MisconceptionId"].tolist()
     names = mis["MisconceptionName"].tolist()

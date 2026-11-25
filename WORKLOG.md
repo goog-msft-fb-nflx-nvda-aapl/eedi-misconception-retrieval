@@ -37,18 +37,41 @@ Gini coefficient over 2,587-class taxonomy 0.666 (0.461 over the 1,604 observed 
 | E5-large fine-tuned + LLM expansion | SS | 0.2248 | 0.2807 | 0.731 |
 | E5-large ft (names) + bge-reranker-v2-m3 | SS | 0.2637 | 0.3091 | (cands R@25 0.710) |
 
+Retriever inputs, SS split, E5-large, all at max_seq_len 320 (clean comparison; epoch0 = zero-shot):
+
+| Query / doc text | zero-shot MAP@3 | zero-shot R@25 | fine-tuned MAP@3 | MAP@25 | R@25 |
+|---|---|---|---|---|---|
+| names only | 0.1180 | 0.421 | 0.2171 | 0.2665 | 0.710 |
+| + doc expansion (Qwen2.5-7B) | 0.1371 | 0.576 | 0.2285 | 0.2834 | 0.739 |
+| + query reasoning (Qwen2.5-7B) | 0.1227 | 0.426 | 0.2218 | 0.2772 | 0.755 |
+| + both | 0.1410 | 0.574 | 0.2553 | 0.3115 | 0.782 |
+
+Names-only at 192 tokens was 0.2320 / R@25 0.714 vs 0.2171 / 0.710 at 320: a 0.015 gap from length alone, so single-addition MAP@3 gaps (+0.005, +0.011) are not established; the combined +0.038 MAP@3 and the recall gains (+0.03 to +0.07) are larger than that run-to-run gap.
+
+Post-hoc on SS bge-reranker scores (08_calibration.py, settings tuned on one question-half, scored on the other, out-of-fold):
+
+| Scoring | MAP@3 | unseen share of top-1 |
+|---|---|---|
+| reranker only | 0.2637 | 0.406 |
+| + retriever score fusion | 0.2833 | 0.450 |
+| + fusion + unseen-label bonus | 0.2836 | 0.535 |
+
+(true unseen share of val labels 0.576; only 0.710 of val rows have the label in the top-25 at all.)
+
+RL selector (09_rl_selector.py; 2-fold CV over val questions, 5 seeds, features = reranker/retriever z-scores and ranks): reranker only 0.2639; supervised listwise policy 0.2802 +- 0.004; REINFORCE (Plackett-Luce top-3, reward AP@3) 0.2804 +- 0.005; with an unseen-flag feature: supervised 0.2822, REINFORCE 0.2772 +- 0.009. REINFORCE matches the supervised policy and plain fusion; no gain beyond score fusion.
+
 Seen/unseen Recall@25, E5-large fine-tuned: QS seen 0.831 / unseen 0.747; SS names seen 0.668 / unseen 0.747; SS +expansion seen 0.698 / unseen 0.756.
 The SS reranker's retriever-only reference is MAP@3 0.2320, R@25 0.710 (03 reported R@25 0.714: encoding precision). Retriever-only reference inside 04 differs from 03 in the 4th decimal (E5-small 0.2692 vs 0.2695, E5-large 0.3097 vs 0.3099): encoding precision, not a different model.
 
 ## Setup details
 - Retriever (03): InfoNCE tau 0.05, in-batch + 1 BM25 hard negative per anchor, same-misconception in-batch false negatives masked, AdamW, bf16, batch 64, 10 epochs, lr 3e-5 (small) / 1.5e-5 (large), linear warmup/decay.
 - Reranker (04): listwise softmax CE over [positive + 15 negatives from retriever top-25], 8 queries/step, 5 epochs; MiniLM lr 3e-5, bge lr 1e-5; val candidates = retriever top-25. Training candidates come from a retriever fine-tuned on those same rows (optimistic negatives).
+- Query reasoning (07): Qwen2.5-7B-Instruct, greedy, <=110 new tokens, input = question, correct answer text, wrong answer text (no label); appended as ' | Reasoning: ...' to the query (03 `--qreason`).
 - Expansion (06): Qwen2.5-7B-Instruct, greedy, <=90 new tokens, input = misconception name only; prompt in the script. Expansion run used max_seq_len 256 vs 192 for the names run (confound).
 - Synthetic note: expansions are uneven in quality (e.g. id 0 explanation is muddled).
 
 ## Not done / open
-- RL passage selector (proposal bonus): not run. As specified (always output 3 of a ranked list) it reduces to a ranking loss.
-- Query-side LLM reasoning, unseen-label calibration, LLM (Qwen) rerankers, synthetic data: not run.
+- LLM (Qwen) rerankers, synthetic training data: not run.
 - Single seed; no confidence intervals.
 
 ## Logs / artifacts on server (~/dm/ragmap)
