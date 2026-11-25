@@ -1,0 +1,17 @@
+{
+ "rows": 4370,
+ "questions": 1869,
+ "taxonomy": 2587,
+ "classes_in_train_csv": 1604,
+ "classes_never_in_train_csv": 983,
+ "gini_coefficient_over_taxonomy": 0.6656440095212905,
+ "gini_over_observed_classes": 0.4607363171019818,
+ "max_count": 54,
+ "median_count_observed": 2.0,
+ "seen_once": 747,
+ "top10_share_of_rows": 0.07643020594965676,
+ "split_train_rows": 3715,
+ "split_val_rows": 655,
+ "val_rows_unseen_label": 170,
+ "distractors_per_question_mean": 2.3381487426431247
+}

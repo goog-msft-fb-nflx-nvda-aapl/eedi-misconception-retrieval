@@ -1,0 +1,10 @@
+data/
+models/
+eda/
+evaluation/
+*.log
+*.done
+*.npz
+__pycache__/
+.DS_Store
+results/misconception_expanded.csv
