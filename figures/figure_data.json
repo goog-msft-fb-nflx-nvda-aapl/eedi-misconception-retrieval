@@ -1,0 +1,63 @@
+{
+ "f02_label_longtail": {
+  "never in\ntraining": 983,
+  "exactly\n1 row": 747,
+  "2 or more\nrows": 857
+ },
+ "f03_unseen_share": {
+  "question split\n(170 of 655 rows)": 25.9542,
+  "subject split\n(491 of 852 rows)": 57.6291
+ },
+ "f04_baselines_finetune_qs": {
+  "BM25": 0.0885,
+  "TF-IDF + cosine": 0.1099,
+  "E5-small zero-shot": 0.0606,
+  "E5-large zero-shot": 0.1,
+  "E5-small fine-tuned": 0.2695,
+  "E5-large fine-tuned": 0.3099
+ },
+ "f05_reranker_qs": {
+  "E5-small\nfine-tuned": 0.2695,
+  "+ MiniLM\nreranker": 0.3079,
+  "E5-large\nfine-tuned": 0.3099,
+  "+ BGE-v2-m3\nreranker": 0.3394
+ },
+ "f06_split_gap": {
+  "question split": 0.3099,
+  "subject split": 0.232
+ },
+ "f07_MAP@3": {
+  "names only": 0.2171,
+  "+ misconception explanations": 0.2285,
+  "+ answer reasoning": 0.2218,
+  "+ both": 0.2553
+ },
+ "f07_Recall@25": {
+  "names only": 0.7101,
+  "+ misconception explanations": 0.7394,
+  "+ answer reasoning": 0.7547,
+  "+ both": 0.7817
+ },
+ "f08_ladder_ss": {
+  "BM25": 0.0869,
+  "TF-IDF + cosine": 0.1125,
+  "E5-large zero-shot": 0.118,
+  "E5-large fine-tuned": 0.2171,
+  "+ explanations + reasoning": 0.2553,
+  "+ BGE reranker": 0.2917,
+  "+ score fusion (out-of-fold)": 0.311
+ },
+ "f09_rank_of_correct": {
+  "rank 1": 24.061,
+  "rank 2 or 3": 17.6056,
+  "rank 4 to 25": 36.5023,
+  "not in\ntop 25": 21.831
+ },
+ "f10_posthoc_final": {
+  "reranker\nonly": 0.2917,
+  "+ score\nfusion": 0.311,
+  "+ fusion +\nunseen bonus": 0.3085,
+  "supervised\nlistwise policy": 0.3165,
+  "REINFORCE\npolicy": 0.3119
+ }
+}

@@ -55,22 +55,24 @@ def col(name, labels, vals, colors, title, ylim, ylabel="MAP@3", note=None, figs
 
 
 # f01 pipeline diagram ------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(14, 6.4)); ax.set_xlim(0, 14); ax.set_ylim(0, 6.4); ax.axis("off")
-def box(x, y, w, h, text, fc, tc="white", fs=16, ec=None):
+fig, ax = plt.subplots(figsize=(16, 7.2)); ax.set_xlim(0, 16); ax.set_ylim(0, 7.2); ax.axis("off")
+def box(x, y, w, h, text, fc, tc="white", fs=15, ec=None):
     ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.04,rounding_size=0.18", fc="#" + fc, ec="#" + (ec or fc), lw=2))
-    ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", color=tc, fontsize=fs, fontweight="bold", linespacing=1.3)
+    ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", color=(tc if tc == "white" else "#" + tc), fontsize=fs, fontweight="bold", linespacing=1.3)
 def arrow(x1, y1, x2, y2, c=DARK, ls="-"):
     ax.add_patch(FancyArrowPatch((x1, y1), (x2, y2), arrowstyle="-|>", mutation_scale=22, lw=2.4, color="#" + c, linestyle=ls))
-box(0.2, 2.4, 2.6, 1.6, "Query\nquestion + correct answer\n+ wrong answer", PALE, DARK, 14, GREY)
-box(3.5, 2.4, 2.6, 1.6, "E5 bi-encoder\n(fine-tuned)", GREEN, fs=16)
-box(6.8, 2.4, 2.0, 1.6, "Top 25\ncandidates", TEAL, fs=16)
-box(9.4, 2.4, 2.4, 1.6, "BGE cross-encoder\nreranker\n(listwise)", GREEN, fs=15)
-box(12.2, 2.4, 1.6, 1.6, "Top 3\nanswer", AMBER, DARK, 16)
-for a, b in [(2.8, 3.5), (6.1, 6.8), (8.8, 9.4), (11.8, 12.2)]: arrow(a, 3.2, b, 3.2)
-box(3.2, 0.3, 3.2, 1.1, "2,587 misconceptions,\nembedded once", PALE, DARK, 14, GREY); arrow(4.8, 1.4, 4.8, 2.4)
-box(0.2, 4.9, 4.7, 1.2, "Offline LLM reasoning per wrong answer\n(Qwen2.5-7B, no labels)", "FCE8C8", DARK, 14, AMBER); arrow(2.6, 4.9, 2.0, 4.0, AMBER, "--")
-box(5.4, 4.9, 4.7, 1.2, "Offline LLM explanation per misconception\n(Qwen2.5-7B, name only)", "FCE8C8", DARK, 14, AMBER); arrow(6.4, 4.9, 5.2, 4.0, AMBER, "--")
-ax.text(10.6, 5.5, "dashed = offline enrichment\nno labels used", fontsize=13, color="#555", va="center")
+Y, H = 2.5, 1.9
+box(0.2, Y, 3.6, H, "Query\nquestion + correct answer\n+ wrong answer", PALE, DARK, 12, GREY)
+box(4.4, Y, 3.0, H, "E5 bi-encoder\n(fine-tuned)", GREEN)
+box(8.0, Y, 2.2, H, "Top 25\ncandidates", TEAL)
+box(10.8, Y, 3.0, H, "BGE cross-encoder\nreranker (listwise)", GREEN, fs=14)
+box(14.2, Y, 1.6, H, "Top 3\nanswer", AMBER, DARK)
+for a_, b_ in [(3.8, 4.4), (7.4, 8.0), (10.2, 10.8), (13.8, 14.2)]: arrow(a_, Y + H / 2, b_, Y + H / 2)
+TY, TH = 5.3, 1.5
+box(0.2, TY, 3.6, TH, "Offline LLM reasoning\nper wrong answer\n(Qwen2.5-7B, no labels)", "FCE8C8", DARK, 13, AMBER); arrow(2.0, TY, 2.0, Y + H, AMBER, "--")
+box(4.4, TY, 3.0, TH, "2,587 misconceptions\nembedded once", PALE, DARK, 14, GREY); arrow(5.9, TY, 5.9, Y + H)
+box(8.2, TY, 4.6, TH, "Offline LLM explanation\nper misconception\n(Qwen2.5-7B, name only)", "FCE8C8", DARK, 13, AMBER); arrow(8.2, TY + TH / 2, 7.4, TY + TH / 2, AMBER, "--")
+ax.text(0.2, 1.0, "dashed arrows = offline enrichment, generated once, no labels used", fontsize=14, color="#555", va="center")
 save(fig, "f01_pipeline")
 
 # f02 long tail ---------------------------------------------------------------------
@@ -105,13 +107,13 @@ col("f06_split_gap", ["question split", "subject split"], [e5l[-1]["MAP@3"], ss1
 # f07 enrichment ablation, subject split @320 ------------------------------------------------------------
 tags = [("names only", "e5l_subj_L320"), ("+ misconception\nexplanations", "e5l_subj_exp_L320"),
         ("+ answer\nreasoning", "e5l_subj_qr_L320"), ("+ both", "e5l_subj_expqr_L320")]
-fig, axes = plt.subplots(1, 2, figsize=(14, 6.2))
+fig, axes = plt.subplots(1, 2, figsize=(18, 6.4))
 for ax, key, ttl, lim in ((axes[0], "MAP@3", "MAP@3", 0.34), (axes[1], "Recall@25", "Recall@25", 0.95)):
     vals = [hist(t)[-1][key] for _, t in tags]
     bars = ax.bar([l for l, _ in tags], vals, color=["#" + c for c in (GREY, TEAL, TEAL, GREEN)], width=0.65)
     ax.set_ylim(0, lim); ax.set_title(ttl, loc="left", fontsize=20, fontweight="bold")
     for b, v in zip(bars, vals): ax.text(b.get_x() + b.get_width() / 2, v + lim * 0.012, f"{v:.3f}", ha="center", fontsize=16, fontweight="bold")
-    plt.setp(ax.get_xticklabels(), fontsize=13)
+    plt.setp(ax.get_xticklabels(), fontsize=14)
     data["f07_" + key] = {l.replace("\n", " "): round(v, 4) for (l, _), v in zip(tags, vals)}
 fig.suptitle("Subject split, E5-large fine-tuned, same input length (320 tokens)", x=0.01, ha="left", fontsize=19, fontweight="bold", y=1.02)
 save(fig, "f07_enrichment_ss")
@@ -135,7 +137,7 @@ rl = J("rl_subj_expqr_unseen0.json")
 col("f10_posthoc_final", ["reranker\nonly", "+ score\nfusion", "+ fusion +\nunseen bonus", "supervised\nlistwise policy", "REINFORCE\npolicy"],
     [cal["reranker only"]["MAP@3_oof"], cal["+ retriever fusion"]["MAP@3_oof"], cal["+ fusion + unseen bonus"]["MAP@3_oof"],
      rl["supervised_listwise"]["MAP@3_oof_mean"], rl["reinforce"]["MAP@3_oof_mean"]], [GREEN, AMBER, GREY, AMBER, AMBER],
-    "Post-hoc on the final scores (out-of-fold): RL adds nothing beyond blending", 0.40, figsize=(13, 6.2))
+    "Post-hoc blending, out-of-fold", 0.40, figsize=(13, 6.2))
 
 # f11 training curves ----------------------------------------------------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(12, 6.2))

@@ -15,8 +15,12 @@ the winning teams used 14b-72b qwen rankers and synthetic data; see SURVEY.md.
 - `07_query_reasoning.py`: offline llm reasoning per (question, wrong answer), no label used
 - `08_calibration.py`: score fusion and unseen-label bonus, tuned on one half of val and scored on the other
 - `09_rl_selector.py`: reinforce top-3 selector vs a supervised listwise policy on the same features
+- `10_error_analysis.py`: where the correct misconception lands, plus four examples chosen by a fixed rule
+- `11_make_figures.py`: all presentation figures (png + svg) from the saved results
 - `05_make_tables.py`: builds `results/ablation.md` from the saved histories
 - `results/`: per-epoch histories (json), baseline csvs, label stats
+- `REPORT.md`: the written report
+- `figures/`: charts and the pipeline diagram used in the talk
 - `presentation/PRESENTATION.md`: slide-by-slide brief and verbatim speaker script for the video
 - `WORKLOG.md`: every number, the setup behind it and what was not done
 - `SURVEY.md`: what the top eedi teams did (competitor writeups, not peer reviewed)
@@ -37,6 +41,8 @@ python 06_expand_misconceptions.py && python 07_query_reasoning.py   # then add 
 SPLIT_BY=SubjectId python 08_calibration.py --scores models/valscores_<tag>.npz --tag subj
 SPLIT_BY=SubjectId python 09_rl_selector.py --scores models/valscores_<tag>.npz --tag subj
 python 05_make_tables.py
+SPLIT_BY=SubjectId python 10_error_analysis.py --scores models/valscores_<tag>.npz --w 0.5
+python 11_make_figures.py
 ```
 the kaggle data, model weights and the generated expansions are not in the repo.
 

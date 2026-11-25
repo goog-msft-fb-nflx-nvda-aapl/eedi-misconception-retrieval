@@ -67,6 +67,9 @@ Reranker training on this run peaked at epoch 2 on val (0.3169) and ended at 0.2
 Seen/unseen Recall@25, E5-large fine-tuned: QS seen 0.831 / unseen 0.747; SS names seen 0.668 / unseen 0.747; SS +expansion seen 0.698 / unseen 0.756.
 The SS reranker's retriever-only reference is MAP@3 0.2320, R@25 0.710 (03 reported R@25 0.714: encoding precision). Retriever-only reference inside 04 differs from 03 in the 4th decimal (E5-small 0.2692 vs 0.2695, E5-large 0.3097 vs 0.3099): encoding precision, not a different model.
 
+## Error analysis (10_error_analysis.py, final SS pipeline, reranker + fusion w=0.5, 852 val queries)
+Rank of the correct misconception: rank 1 24.1%, rank 2-3 17.6% (top-3 41.7%), rank 4-25 36.5%, not in top 25 21.8%. Top-3: 44.9% on rows with a seen label (361), 39.3% on unseen (491). Descriptive only (w fixed at 0.5, chosen out-of-fold earlier). Four examples chosen by a fixed rule in results/error_examples.md.
+
 ## Setup details
 - Retriever (03): InfoNCE tau 0.05, in-batch + 1 BM25 hard negative per anchor, same-misconception in-batch false negatives masked, AdamW, bf16, batch 64, 10 epochs, lr 3e-5 (small) / 1.5e-5 (large), linear warmup/decay.
 - Reranker (04): listwise softmax CE over [positive + 15 negatives from retriever top-25], 8 queries/step, 5 epochs; MiniLM lr 3e-5, bge lr 1e-5; val candidates = retriever top-25. Training candidates come from a retriever fine-tuned on those same rows (optimistic negatives).
