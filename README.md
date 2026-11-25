@@ -12,6 +12,9 @@ the winning teams used 14b-72b qwen rankers and synthetic data; see SURVEY.md.
 - `03_train_retriever.py`: bi-encoder fine-tuning (infonce, in-batch + bm25 hard negative, false-negative masking, optional `--expand`)
 - `04_train_reranker.py`: listwise cross-encoder reranker over the retriever top-25
 - `06_expand_misconceptions.py`: offline llm explanation of each misconception name (qwen2.5-7b-instruct)
+- `07_query_reasoning.py`: offline llm reasoning per (question, wrong answer), no label used
+- `08_calibration.py`: score fusion and unseen-label bonus, tuned on one half of val and scored on the other
+- `09_rl_selector.py`: reinforce top-3 selector vs a supervised listwise policy on the same features
 - `05_make_tables.py`: builds `results/ablation.md` from the saved histories
 - `results/`: per-epoch histories (json), baseline csvs, label stats
 - `WORKLOG.md`: every number, the setup behind it and what was not done
@@ -29,7 +32,9 @@ python 02_baselines.py
 python 03_train_retriever.py --model_name intfloat/multilingual-e5-large --tag e5l --lr 1.5e-5
 python 04_train_reranker.py --retriever_tag e5l --reranker_model BAAI/bge-reranker-v2-m3 --lr 1e-5 --tag e5l_bge
 SPLIT_BY=SubjectId python 03_train_retriever.py --model_name intfloat/multilingual-e5-large --tag e5l_subj --lr 1.5e-5
-python 06_expand_misconceptions.py   # then add --expand to 03
+python 06_expand_misconceptions.py && python 07_query_reasoning.py   # then add --expand / --qreason to 03 and 04
+SPLIT_BY=SubjectId python 08_calibration.py --scores models/valscores_<tag>.npz --tag subj
+SPLIT_BY=SubjectId python 09_rl_selector.py --scores models/valscores_<tag>.npz --tag subj
 python 05_make_tables.py
 ```
 the kaggle data, model weights and the generated expansions are not in the repo.

@@ -35,7 +35,8 @@ Gini coefficient over 2,587-class taxonomy 0.666 (0.461 over the 1,604 observed 
 | E5-large zero-shot + LLM expansion | SS | 0.1371 | 0.1813 | 0.576 |
 | E5-large fine-tuned (names) | SS | 0.2320 | 0.2816 | 0.714 |
 | E5-large fine-tuned + LLM expansion | SS | 0.2248 | 0.2807 | 0.731 |
-| E5-large ft (names) + bge-reranker-v2-m3 | SS | 0.2637 | 0.3091 | (cands R@25 0.710) |
+| E5-large ft (names, 192 tok) + bge-reranker-v2-m3 | SS | 0.2637 | 0.3091 | (cands R@25 0.710) |
+| E5-large ft (expansion + query reasoning, 320 tok) + bge-reranker-v2-m3 (same inputs, 512 tok) | SS | 0.2917 | 0.3461 | (cands R@25 0.782) |
 
 Retriever inputs, SS split, E5-large, all at max_seq_len 320 (clean comparison; epoch0 = zero-shot):
 
@@ -59,6 +60,9 @@ Post-hoc on SS bge-reranker scores (08_calibration.py, settings tuned on one que
 (true unseen share of val labels 0.576; only 0.710 of val rows have the label in the top-25 at all.)
 
 RL selector (09_rl_selector.py; 2-fold CV over val questions, 5 seeds, features = reranker/retriever z-scores and ranks): reranker only 0.2639; supervised listwise policy 0.2802 +- 0.004; REINFORCE (Plackett-Luce top-3, reward AP@3) 0.2804 +- 0.005; with an unseen-flag feature: supervised 0.2822, REINFORCE 0.2772 +- 0.009. REINFORCE matches the supervised policy and plain fusion; no gain beyond score fusion.
+
+Final SS pipeline (expansion + query reasoning retriever, bge reranker), post-hoc, out-of-fold: reranker only 0.2917; + retriever-score fusion 0.3110; + fusion + unseen bonus 0.3085 (no gain; top-1 unseen share 0.389 -> 0.509); RL/supervised policies (5 seeds): reranker only 0.2924, supervised listwise 0.3165 +- 0.001, REINFORCE 0.3119 +- 0.004.
+Reranker training on this run peaked at epoch 2 on val (0.3169) and ended at 0.2917 at epoch 5 (final epoch reported, no selection); per-epoch val MAP@3 moves by about 0.02, so reranker gains of that size are within epoch-to-epoch variation.
 
 Seen/unseen Recall@25, E5-large fine-tuned: QS seen 0.831 / unseen 0.747; SS names seen 0.668 / unseen 0.747; SS +expansion seen 0.698 / unseen 0.756.
 The SS reranker's retriever-only reference is MAP@3 0.2320, R@25 0.710 (03 reported R@25 0.714: encoding precision). Retriever-only reference inside 04 differs from 03 in the 4th decimal (E5-small 0.2692 vs 0.2695, E5-large 0.3097 vs 0.3099): encoding precision, not a different model.
